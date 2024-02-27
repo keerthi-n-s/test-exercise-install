@@ -1,0 +1,42 @@
+server:
+  global:
+    scrape_interval: 15s
+
+  scrape_configs:
+    - job_name: 'prometheus'
+      static_configs:
+        - targets: ['localhost:9090']
+
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp2
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+nodeExporter:
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+kube-state-metrics:
+  enabled: true
+
+grafana:
+  enabled: true  # Set to true if you want to install Grafana alongside Prometheus
+  adminPassword: admin
+
+persistence:
+  enabled: true
+  storageClassName: gp2
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+## Additional customizations can be added based on your requirements
